@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Funda Nathi IT Mastery Chatbot</title>
+  <style>
+    body { background: #FFF8CC; font-family: Arial; margin: 0; padding: 20px; }
+    h1 { color: #2B2B2B; text-align: center; }
+    #funda-chat-widget { position: fixed; bottom: 20px; right: 20px; width: 380px; height: 520px; border: 2px solid #FFD74A; border-radius: 15px; background: #FFF8CC; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; flex-direction: column; z-index: 9999; }
+    #chat-header { background: #FFD74A; padding: 12px; font-weight: bold; text-align: center; border-radius: 12px 12px 0 0; }
+    #chat-messages { flex: 1; padding: 10px; overflow-y: auto; }
+    #user-input { padding: 10px; margin: 10px; border: 1px solid #ccc; border-radius: 8px; }
+    button { background: #FFD74A; border: none; padding: 10px; border-radius: 8px; margin: 0 10px 10px; cursor: pointer; }
+    .open-btn { position: fixed; bottom: 20px; right: 20px; background: #FFD74A; padding: 15px; border-radius: 50%; border: none; font-size: 24px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 9999; cursor: pointer; }
+    .message { margin: 5px 0; padding: 8px 12px; border-radius: 12px; max-width: 80%; display: inline-block; }
+    .user-msg { text-align: right; background: #FFD74A; }
+    .bot-msg { text-align: left; background: #eee; }
+  </style>
+</head>
+<body>
+  <h1>Aweh, Hola, Howzit! 👋<br>Funda Nathi IT Mastery Chatbot</h1>
+  <p style="text-align:center;">Your free guide to CompTIA, AWS, Python, CV building & more.<br>Click the gold button to start learning!</p>
+
+  <div id="funda-chat-widget" style="display:none;">
+    <div id="chat-header">Funda Nathi IT Bot</div>
+    <div id="chat-messages"></div>
+    <input type="text" id="user-input" placeholder="Ask about Security+, AWS, or your CV...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+  <button class="open-btn" onclick="toggleChat()">💬</button>
+
+  <script>
+    let chatOpen = false;
+    function toggleChat() {
+      const widget = document.getElementById('funda-chat-widget');
+      chatOpen = !chatOpen;
+      widget.style.display = chatOpen ? 'flex' : 'none';
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('user-input');
+      const messagesDiv = document.getElementById('chat-messages');
+      const userMsg = input.value.trim();
+      if (!userMsg) return;
+
+      messagesDiv.innerHTML += `<div class="user-msg message">${userMsg}</div>`;
+      input.value = '';
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+      const response = await fetch('/api/funda-nathi-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMsg })
+      });
+
+      const data = await response.json();
+      messagesDiv.innerHTML += `<div class="bot-msg message">${data.reply.replace(/\n/g, '<br>')}</div>`;
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+  </script>
+</body>
+</html>
